@@ -22,12 +22,11 @@ import (
 	"time"
 
 	"github.com/palantir/stacktrace"
-	"github.com/sumup-oss/go-pkgs/logger"
 )
 
 type AbstractDuplexRelay struct {
 	healthCheckInterval time.Duration
-	logger              logger.Logger
+	logger              Logger
 	sourceName          string
 	destinationName     string
 	destinationAddr     string
@@ -108,7 +107,7 @@ func (r *AbstractDuplexRelay) healthCheckSource(ctx context.Context, listener io
 func (r *AbstractDuplexRelay) handleConnection(ctx context.Context, conn net.Conn) {
 	defer func(conn net.Conn) {
 		_ = conn.Close()
-		logger.Infof("Closed connection to %s %s", r.destinationName, conn.RemoteAddr())
+		r.logger.Infof("Closed connection to %s %s", r.destinationName, conn.RemoteAddr())
 	}(conn)
 
 	// NOTE: Accepted connection at `dst` address

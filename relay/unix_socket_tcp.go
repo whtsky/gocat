@@ -23,7 +23,6 @@ import (
 	"time"
 
 	"github.com/palantir/stacktrace"
-	"github.com/sumup-oss/go-pkgs/logger"
 )
 
 type UnixSocketTCP struct {
@@ -31,7 +30,7 @@ type UnixSocketTCP struct {
 }
 
 func NewUnixSocketTCP(
-	logger logger.Logger,
+	logger Logger,
 	healthCheckInterval time.Duration,
 	unixSocketPath,
 	tcpAddress string,
