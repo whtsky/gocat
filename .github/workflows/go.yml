@@ -9,6 +9,15 @@ on:
     branches:
       - master
 jobs:
+  golangci:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: v1.29
   test:
     name: Test
     strategy:
@@ -26,18 +35,11 @@ jobs:
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
 
-      - name: Download golangci-lint
-        run: curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.23.8
-
       - name: Make sure it builds
         run: go build
 
-      - name: Lint
-        run: $(go env GOPATH)/bin/golangci-lint run --timeout=10m
-
       - name: Test
         run: go test -v ./...
-
   release:
     name: Release
     runs-on: ubuntu-latest
