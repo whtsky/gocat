@@ -21,6 +21,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/libp2p/go-reuseport"
 	"github.com/palantir/stacktrace"
 )
 
@@ -88,7 +89,9 @@ func NewTCPtoUnixSocket(
 			listenTargetConn: func(ctx context.Context) (net.Listener, error) {
 				// NOTE: This is a streaming unix domain socket
 				// equivalent of `sock.STREAM`.
-				var lc net.ListenConfig
+				lc := net.ListenConfig{
+					Control: reuseport.Control,
+				}
 				listener, err := lc.Listen(ctx, "unix", unixSocketPath)
 				if err != nil {
 					return nil, stacktrace.Propagate(

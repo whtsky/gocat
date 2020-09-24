@@ -22,6 +22,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/libp2p/go-reuseport"
 	"github.com/palantir/stacktrace"
 )
 
@@ -82,7 +83,9 @@ func NewUnixSocketTCP(
 				return conn, nil
 			},
 			listenTargetConn: func(ctx context.Context) (net.Listener, error) {
-				var lc net.ListenConfig
+				lc := net.ListenConfig{
+					Control: reuseport.Control,
+				}
 				listener, err := lc.Listen(ctx, "tcp", tcpAddress)
 				if err != nil {
 					return nil, stacktrace.Propagate(
