@@ -22,12 +22,11 @@ import (
 
 	"github.com/palantir/stacktrace"
 	"github.com/spf13/cobra"
-	"github.com/sumup-oss/go-pkgs/logger"
 
 	"github.com/whtsky/gocat/relay"
 )
 
-func NewUnixToTCPCmd(logger logger.Logger) *cobra.Command {
+func NewUnixToTCPCmd(logger relay.Logger) *cobra.Command {
 	var unixToTCPSocketPath string
 	var unixToTCPAddressPath string
 	var bufferSize int

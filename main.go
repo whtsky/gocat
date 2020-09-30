@@ -28,8 +28,7 @@ func main() {
 	osExecutor := &os.RealOsExecutor{}
 	configInstance, err := config.NewConfig()
 	if err != nil {
-		//nolint:errcheck,staticcheck
-		fmt.Fprintf(osExecutor.Stderr(), err.Error())
+		fmt.Fprint(osExecutor.Stderr(), err.Error())
 		osExecutor.Exit(1)
 	}
 
@@ -56,7 +55,6 @@ func main() {
 		return
 	}
 
-	//nolint:errcheck,staticcheck
-	fmt.Fprintf(osExecutor.Stderr(), err.Error())
+	fmt.Fprint(osExecutor.Stderr(), err.Error())
 	osExecutor.Exit(1)
 }
