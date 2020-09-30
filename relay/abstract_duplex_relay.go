@@ -19,20 +19,18 @@ import (
 	"io"
 	"net"
 	"sync"
-	"time"
 
 	"github.com/palantir/stacktrace"
 )
 
 type AbstractDuplexRelay struct {
-	healthCheckInterval time.Duration
-	logger              Logger
-	sourceName          string
-	destinationName     string
-	destinationAddr     string
-	bufferSize          int
-	dialSourceConn      func(context.Context) (net.Conn, error)
-	listenTargetConn    func(context.Context) (net.Listener, error)
+	logger           Logger
+	sourceName       string
+	destinationName  string
+	destinationAddr  string
+	bufferSize       int
+	dialSourceConn   func(context.Context) (net.Conn, error)
+	listenTargetConn func(context.Context) (net.Listener, error)
 }
 
 func (r *AbstractDuplexRelay) Relay(ctx context.Context) error {
@@ -42,7 +40,6 @@ func (r *AbstractDuplexRelay) Relay(ctx context.Context) error {
 	}
 	defer listener.Close()
 
-	go r.healthCheckSource(ctx, listener)
 	go func() {
 		<-ctx.Done()
 		listener.Close()
@@ -61,45 +58,6 @@ func (r *AbstractDuplexRelay) Relay(ctx context.Context) error {
 
 		r.logger.Infof("Established connection to %s", conn.RemoteAddr())
 		go r.handleConnection(ctx, conn)
-	}
-}
-
-func (r *AbstractDuplexRelay) healthCheckSource(ctx context.Context, listener io.Closer) {
-	defer listener.Close()
-
-	ticker := time.NewTicker(r.healthCheckInterval)
-	defer ticker.Stop()
-
-	// NOTE: Dial source to make sure it's alive
-	conn, err := r.dialSourceConn(ctx)
-	if err != nil {
-		r.logger.Errorf(
-			"Could not dial %s for health check. Error: %s\n",
-			r.sourceName,
-			err,
-		)
-		return
-	}
-	conn.Close()
-
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		case <-ticker.C:
-			// NOTE: Dial source to make sure it's alive
-			conn, err := r.dialSourceConn(ctx)
-			if err != nil {
-				r.logger.Errorf(
-					"Could not dial %s for health check. Error: %s\n",
-					r.sourceName,
-					err,
-				)
-				conn.Close()
-				return
-			}
-			conn.Close()
-		}
 	}
 }
 

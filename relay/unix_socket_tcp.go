@@ -20,7 +20,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/libp2p/go-reuseport"
 	"github.com/palantir/stacktrace"
@@ -32,7 +31,6 @@ type UnixSocketTCP struct {
 
 func NewUnixSocketTCP(
 	logger Logger,
-	healthCheckInterval time.Duration,
 	unixSocketPath,
 	tcpAddress string,
 	bufferSize int,
@@ -61,12 +59,11 @@ func NewUnixSocketTCP(
 
 	return &UnixSocketTCP{
 		AbstractDuplexRelay{
-			healthCheckInterval: healthCheckInterval,
-			logger:              logger,
-			bufferSize:          bufferSize,
-			sourceName:          "unix socket",
-			destinationName:     "TCP connection",
-			destinationAddr:     tcpAddress,
+			logger:          logger,
+			bufferSize:      bufferSize,
+			sourceName:      "unix socket",
+			destinationName: "TCP connection",
+			destinationAddr: tcpAddress,
 			dialSourceConn: func(ctx context.Context) (net.Conn, error) {
 				dialer := &net.Dialer{}
 				// NOTE: This is a streaming unix domain socket

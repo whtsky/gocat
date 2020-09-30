@@ -33,7 +33,6 @@ type TCPtoUnixsocket struct {
 
 func NewTCPtoUnixSocket(
 	logger Logger,
-	healthCheckInterval time.Duration,
 	tcpAddress,
 	unixSocketPath string,
 	bufferSize int,
@@ -57,12 +56,11 @@ func NewTCPtoUnixSocket(
 
 	return &TCPtoUnixsocket{
 		AbstractDuplexRelay{
-			healthCheckInterval: healthCheckInterval,
-			logger:              logger,
-			sourceName:          "TCP connection",
-			destinationName:     "unix socket",
-			destinationAddr:     unixSocketPath,
-			bufferSize:          bufferSize,
+			logger:          logger,
+			sourceName:      "TCP connection",
+			destinationName: "unix socket",
+			destinationAddr: unixSocketPath,
+			bufferSize:      bufferSize,
 			dialSourceConn: func(ctx context.Context) (net.Conn, error) {
 				dialer := &net.Dialer{
 					KeepAlive: tcpKeepAlivePeriod,

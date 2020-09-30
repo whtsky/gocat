@@ -18,18 +18,19 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"github.com/sumup-oss/go-pkgs/os"
-	"github.com/sumup-oss/go-pkgs/task"
-	"github.com/sumup-oss/go-pkgs/testutils"
-	gocatTesting "github.com/whtsky/gocat/testing"
 	"io/ioutil"
 	"net"
 	stdOs "os"
 	"os/exec"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"github.com/sumup-oss/go-pkgs/os"
+	"github.com/sumup-oss/go-pkgs/task"
+	"github.com/sumup-oss/go-pkgs/testutils"
+	gocatTesting "github.com/whtsky/gocat/testing"
 )
 
 var (

@@ -19,7 +19,6 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"github.com/palantir/stacktrace"
 	"github.com/spf13/cobra"
@@ -32,7 +31,6 @@ func NewTCPToUnixCmd(logger logger.Logger) *cobra.Command {
 	var tcpToUnixSocketPath string
 	var tcpToUnixAddressPath string
 	var bufferSize int
-	var tcpToUnixHealthCheckInterval time.Duration
 
 	cmdInstance := &cobra.Command{
 		Use:   "tcp-to-unix",
@@ -51,7 +49,6 @@ func NewTCPToUnixCmd(logger logger.Logger) *cobra.Command {
 
 			relayer, err := relay.NewTCPtoUnixSocket(
 				logger,
-				tcpToUnixHealthCheckInterval,
 				tcpToUnixAddressPath,
 				tcpToUnixSocketPath,
 				bufferSize,
@@ -88,12 +85,6 @@ func NewTCPToUnixCmd(logger logger.Logger) *cobra.Command {
 		},
 	}
 
-	cmdInstance.Flags().DurationVar(
-		&tcpToUnixHealthCheckInterval,
-		"health-check-interval",
-		30*time.Second,
-		"health check interval for `src`, e.g values are 30m, 60s, 1h.",
-	)
 	cmdInstance.Flags().StringVar(&tcpToUnixAddressPath, "src", "", "source of TCP address")
 	_ = cmdInstance.MarkFlagRequired("src")
 	cmdInstance.Flags().StringVar(
