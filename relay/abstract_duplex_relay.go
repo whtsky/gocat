@@ -20,7 +20,7 @@ import (
 	"net"
 	"sync"
 
-	"github.com/palantir/stacktrace"
+	"golang.org/x/xerrors"
 )
 
 type AbstractDuplexRelay struct {
@@ -36,7 +36,7 @@ type AbstractDuplexRelay struct {
 func (r *AbstractDuplexRelay) Relay(ctx context.Context) error {
 	listener, err := r.listenTargetConn(ctx)
 	if err != nil {
-		return stacktrace.Propagate(err, "could bind to %s %s", r.destinationName, r.destinationAddr)
+		return xerrors.Errorf("could bind to %s %s: %w", r.destinationName, r.destinationAddr, err)
 	}
 	defer listener.Close()
 

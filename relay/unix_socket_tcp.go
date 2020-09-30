@@ -22,7 +22,7 @@ import (
 	"strings"
 
 	"github.com/libp2p/go-reuseport"
-	"github.com/palantir/stacktrace"
+	"golang.org/x/xerrors"
 )
 
 type UnixSocketTCP struct {
@@ -37,7 +37,7 @@ func NewUnixSocketTCP(
 ) (*UnixSocketTCP, error) {
 	tcpAddressParts := strings.Split(tcpAddress, ":")
 	if len(tcpAddressParts) != 2 {
-		return nil, stacktrace.NewError(
+		return nil, xerrors.Errorf(
 			"wrong format for tcp address %s. Expected <addr>:<port>",
 			tcpAddress,
 		)
@@ -45,16 +45,20 @@ func NewUnixSocketTCP(
 
 	_, err := strconv.ParseInt(tcpAddressParts[1], 10, 32)
 	if err != nil {
-		return nil, stacktrace.Propagate(
-			err,
-			"could not parse specified port number %s",
+		return nil, xerrors.Errorf(
+			"could not parse specified port number %s: %w",
 			tcpAddressParts[1],
+			err,
 		)
 	}
 
 	_, err = os.Stat(unixSocketPath)
 	if os.IsNotExist(err) {
-		return nil, stacktrace.Propagate(err, "could not stat %s", unixSocketPath)
+		return nil, xerrors.Errorf(
+			"could not stat %s: %w",
+			unixSocketPath,
+			err,
+		)
 	}
 
 	return &UnixSocketTCP{
@@ -70,10 +74,10 @@ func NewUnixSocketTCP(
 				// equivalent of `sock.STREAM`.
 				conn, err := dialer.DialContext(ctx, "unix", unixSocketPath)
 				if err != nil {
-					return nil, stacktrace.Propagate(
-						err,
-						"failed to dial unix address: %s",
+					return nil, xerrors.Errorf(
+						"failed to dial unix address %s: %w",
 						unixSocketPath,
+						err,
 					)
 				}
 
@@ -85,10 +89,10 @@ func NewUnixSocketTCP(
 				}
 				listener, err := lc.Listen(ctx, "tcp", tcpAddress)
 				if err != nil {
-					return nil, stacktrace.Propagate(
-						err,
-						"failed to listen at TCP address: %s",
+					return nil, xerrors.Errorf(
+						"failed to listen at TCP address %s: %w",
 						tcpAddress,
+						err,
 					)
 				}
 				return listener, nil
